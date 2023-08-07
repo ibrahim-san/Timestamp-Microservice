@@ -24,7 +24,50 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
+// timestamp microservice
 
+app.get("/api", (req, res) => {
+  
+  let unixDate = Date.now();
+  let dateObject = new Date();
+  let gmtFormattedDate = dateObject.toGMTString();
+
+  res.json({"unix": unixDate,"utc": gmtFormattedDate});
+  
+});
+
+app.get("/api/:date", (req, res) => {
+
+  let date = req.params.date;
+  const unixEpoch = /^(\d*)$/;
+  
+  if (unixEpoch.test(date)) {
+    
+    let unixDate = +date;
+    let dateObject = new Date(unixDate);
+    let gmtFormattedDate = dateObject.toGMTString();
+  
+    res.json({"unix": unixDate,"utc": gmtFormattedDate});
+        
+  } else {
+      
+    let dateObject = new Date(date);
+    let unixDate = dateObject.getTime();
+    unixDate = +unixDate;
+    let gmtFormattedDate = dateObject.toGMTString();
+
+    if (gmtFormattedDate == "Invalid Date") {
+        
+      res.json({ error : "Invalid Date" });
+        
+    } else {
+        
+      res.json({"unix": unixDate,"utc": gmtFormattedDate});
+        
+    }
+      
+  }
+});
 
 // listen for requests :)
 var listener = app.listen(process.env.PORT, function () {
